@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+<ol class="breadcrumb">
+  <li><a href="#">管理首页</a></li>
+  <li><span>分类编辑</span></li>
+</ol>
+
+<h3>修改分类 - {{category.name}}</h3>
+
+<div style="width: 500px;margin: 0 auto;line-height: 40px;">
+<form role="form" method="post">
+  <div class="form-group">
+    <label for="name">修改分类名称为</label>
+    <input type="text" class="form-control" id="name" placeholder="请输入新的分类名称" name="name" value="{{category.name}}">
+  </div>
+  <button type="submit" class="btn btn-default" role="submit" style="color: royalblue">确定</button>
+  <button type="button" class="btn btn-default" role="submit" style="margin-left: 50px;"> 
+    <a href="javascript:window.history.back();" style="color:rgb(94, 94, 94)">返回</a>
+    </button>
+</form>
+</div>
+
+{% endblock %}
+
