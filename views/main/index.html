@@ -16,7 +16,10 @@
     <nav>
         <div class="menu">
             <a href="/" class="focus">首页</a>
-            <a href="/">首页</a>
+            {% for category in categories %}
+            <a href="/">{{category.name}}</a>
+            {% endfor %}
+
         </div>
     </nav>
     <main class="clear">
@@ -94,8 +97,8 @@
 
             <div class="rightBox">
                 <div class="title"><span>社区</span></div>
-                <p><a href="http://www.miaov.com" target="_blank" class="colDanger">妙味课堂</a></p>
-                <p><a href="http://bbs.miaov.com" target="_blank" class="colDanger">妙味茶馆</a></p>
+                <p><a href="http://www.miaov.com" target="_blank" class="colDanger">美食</a></p>
+                <p><a href="http://bbs.miaov.com" target="_blank" class="colDanger">风土人情</a></p>
             </div>
         </div>
     </main>

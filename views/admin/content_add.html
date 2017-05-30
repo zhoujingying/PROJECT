@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+<ol class="breadcrumb">
+  <li><a href="#">管理首页</a></li>
+  <li><span>发布通知</span></li>
+</ol>
+
+<h3>发布通知</h3>
+
+<div style="width: 800px;margin: 0 auto;line-height: 40px;" class="category-add">
+<form role="form" method="post">
+  <div class="form-group">
+    <label for="category">分类</label>
+    <select name="category" id="category" class="form-control">
+      {% for category in categories%}
+      <option value="category.id">{{category.name}}</option>
+      {% endfor %}
+
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="title">标题:</label>
+    <input type="text" class="form-control" id="title" placeholder="请输入通知标题" name="name">
+  </div>
+
+  <div class="form-group">
+    <label for="description">简介:</label>
+    <textarea name="description" id="description" rows="5" placeholder="请输入通知简介" class="form-control" ></textarea>
+  </div>
+
+  <div class="form-group">
+    <label for="content">内容:</label>
+    <textarea name="content" id="content" rows="10" placeholder="请输入通知内容" class="form-control"></textarea>
+  </div>
+
+  <button type="submit" class="btn btn-default" role="submit">确定</button>
+</form>
+</div>
+
+{% endblock %}
+

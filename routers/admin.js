@@ -113,8 +113,15 @@ router.get('/category',function(req,res){
         page = Math.max(page,1);
 
         var skip = (page-1)*limit;
-        
-        Category.find().limit(limit).skip(skip).then(function(categories){
+
+        /*
+        * 1: 升序
+        * -1： 降序
+        *
+        * */
+
+
+        Category.find().sort({_id:-1}).limit(limit).skip(skip).then(function(categories){
         res.render('admin/category_index',{
         userInfo:req.userInfo,
         categories:categories,
@@ -279,6 +286,37 @@ router.get('/category/delete',function(req,res){
             });
     })
 })
+
+/**
+ *
+ *  博客内容显示
+ */
+
+router.get('/content',function (req,res) {
+
+    res.render('admin/content_index',{
+        userInfo:req.userInfo
+    })
+})
+
+/**
+ *
+ *  发布通知
+ */
+
+router.get('/content/add',function (req,res) {
+
+    Category.find().then(function (categories) {
+        res.render('admin/content_add',{
+            userInfo:req.userInfo,
+            categories:categories
+        })
+    })
+
+
+})
+
+
 module.exports = router;
 
 
