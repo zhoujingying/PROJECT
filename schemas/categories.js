@@ -1,7 +1,7 @@
 
-var mogooes = require('mongoose');
+var mongoose = require('mongoose');
 
-module.exports = new mogooes.Schema({
+module.exports = new mongoose.Schema({
 
     name:String
     

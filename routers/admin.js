@@ -3,6 +3,7 @@ var router = express.Router();
 
 var User = require('../models/Users');
 var Category = require('../models/Categories');
+var Contents = require('../models/Contents');
 
 /**
  * 权限判断
@@ -156,7 +157,7 @@ router.post('/category/add',function(req,res){
    
    var name = req.body.name || "";
    if(name == ''){
-       res.render('admin/category_message',{
+       res.render('admin/shown_message',{
            userInfo:req.userInfo,
            message:'新增类别不能为空',
        });
@@ -169,7 +170,7 @@ router.post('/category/add',function(req,res){
        name:name
    }).then(function(rs){
        if(rs){
-            res.render('admin/category_message',{
+            res.render('admin/shown_message',{
             userInfo:req.userInfo,
             message:'新增类别名字已经存在',
         });
@@ -181,7 +182,7 @@ router.post('/category/add',function(req,res){
            }).save();
        }
    }).then(function(newCategory){
-                res.render('admin/category_message',{
+                res.render('admin/shown_message',{
                 userInfo:req.userInfo,
                 message:'新增类别添加成功',
                 url:'/admin/category'
@@ -202,7 +203,7 @@ router.get('/category/edit',function(req,res){
         _id:id
     }).then(function(category){
         if(!category){
-            res.render('admin/category_message',{
+            res.render('admin/shown_message',{
                 userInfo:req.userInfo,
                 message:"分类信息不存在"
             });
@@ -225,7 +226,7 @@ router.post('/category/edit',function(req,res){
         _id:id
     }).then(function(category){
         if(!category){
-            res.render('admin/category_message',{
+            res.render('admin/shown_message',{
                 userInfo:req.userInfo,
                 message:"分类信息不存在"
             });
@@ -233,7 +234,7 @@ router.post('/category/edit',function(req,res){
         }else{
             //用户没有做任何修改时
             if(name == category.name){
-                res.render('admin/category_message',{
+                res.render('admin/shown_message',{
                     userInfo:req.userInfo,
                     message:"修改成功",
                     url:'/admin/category'
@@ -249,7 +250,7 @@ router.post('/category/edit',function(req,res){
         }
     }).then(function(sameCategory){
         if(sameCategory){
-            res.render('admin/category_message',{
+            res.render('admin/shown_message',{
                     userInfo:req.userInfo,
                     message:"数据库中已存在同名类型"
             });
@@ -262,7 +263,7 @@ router.post('/category/edit',function(req,res){
             });
         }
     }).then(function(){
-        res.render('admin/category_message',{
+        res.render('admin/shown_message',{
                     userInfo:req.userInfo,
                     message:"修改成功",
                     url:'/admin/category'
@@ -279,7 +280,7 @@ router.get('/category/delete',function(req,res){
     Category.remove({
         _id:id
     }).then(function(){
-        res.render('admin/category_message',{
+        res.render('admin/shown_message',{
                 userInfo:req.userInfo,
                 message:"删除成功",
                 url:"/admin/category"
@@ -294,14 +295,53 @@ router.get('/category/delete',function(req,res){
 
 router.get('/content',function (req,res) {
 
-    res.render('admin/content_index',{
-        userInfo:req.userInfo
+    var page = Number(req.query.page || 1);      //http  ?page=1   query多余字符
+    var limit = 2;
+    var page_max = 0;
+    var page_count = 0;
+
+
+    Contents.count().then(function(count){
+
+        page_count = count;
+
+        //计算总页数
+
+        page_max = Math.ceil(count/limit);
+
+        //取值>page_max 则 page=page_max
+        page = Math.min(page,page_max);
+
+        //取值<1 则 page=1
+        page = Math.max(page,1);
+
+        var skip = (page-1)*limit;
+
+        /*
+         * 1: 升序
+         * -1： 降序
+         * */
+        Contents.find().sort({_id:-1}).limit(limit).skip(skip).populate(['category','user']).then(function(contents){
+            //populate对应contents schemas中的category健
+            console.log(contents);
+            res.render('admin/content_index',{
+                userInfo:req.userInfo,
+                contents:contents,
+                api:'content',
+                page:page,
+                page_max:page_max,
+                page_count:page_count,
+                page_limit:limit
+            })
+        })
+
     })
+
 })
 
 /**
  *
- *  发布通知
+ *  发布通知页面显示
  */
 
 router.get('/content/add',function (req,res) {
@@ -316,13 +356,174 @@ router.get('/content/add',function (req,res) {
 
 })
 
+/**
+ *
+ *  发布通知保存
+ */
 
-module.exports = router;
+router.post('/content/add',function (req,res) {
+
+    if(req.body.title === "" ||req.body.content === ""){
+        res.render('admin/shown_message',{
+            userInfo:req.userInfo,
+            message:"通知标题和内容不能为空"
+        })
+        return;
+    }
+
+    new Contents({
+        category:req.body.category,
+        title:req.body.title,
+        user: req.userInfo._id.toString(),
+        description:req.body.description,
+        // content:req.body.content.replace(reg1,"&nbsp").replace(/\r\n/g,"<br/>")
+        content:req.body.content
+    }).save().then(function (rs) {
+        res.render('admin/shown_message',{
+            userInfo:req.userInfo,
+            message:"内容保存成功",
+            url:'/admin/content'
+        })
+    })
+})
+
+
+/**
+ *
+ *  发布通知修改get
+ */
+router.get('/content/edit',function (req,res) {
+    var id = req.query.id || "";
+
+    var categories = [];
+
+    Category.find().sort({_id:-1}).then(function(rs){
+
+        categories = rs;
+
+        return Contents.findOne({
+            _id: id
+        }).populate('category');
+    }).then(function(contents){
+        if(!contents){
+            res.render('admin/shown_message',{
+                userInfo:req.userInfo,
+                message:"分类信息不存在"
+            });
+            return Promise.reject();
+        }else{
+            res.render('admin/content_edit',{
+                userInfo:req.userInfo,
+                contents:contents,
+                categories:categories
+            });
+        }
+    })
+
+
+})
 
 
 
+/**
+ *
+ *  发布通知修改post
+ */
+router.post('/content/edit',function (req,res) {
+    var id = req.query.id || "";
+
+    if(req.body.title === "" ||req.body.content === ""){
+        res.render('admin/shown_message',{
+            userInfo:req.userInfo,
+            message:"通知标题和内容不能为空"
+        })
+        return;
+    }
+
+    Contents.update({
+            _id: id
+        }
+    ,{
+        category: req.body.category,
+        title: req.body.title,
+        description: req.body.description,
+        content: req.body.content
+        }).then(function () {
+        res.render('admin/shown_message', {
+            userInfo: req.userInfo,
+            message: '内容保存成功',
+            url: '/admin/content'
+        })
+    })
+})
+
+
+/**
+ *
+ *  发布博客删除post
+ */
+router.get('/content/delete',function (req,res) {
+    var id = req.query.id || "";
+
+    Contents.remove({
+        _id:id
+    }).then(function(){
+        res.render('admin/shown_message',{
+            userInfo:req.userInfo,
+            message:"删除成功",
+            url:"/admin/content"
+        });
+    })
+})
+
+
+/**
+ *
+ *  禁言用户
+ */
+router.get('/user/unactive',function (req,res){
+    var id = req.query.id || "";
+
+    User.update({
+            _id: id
+        }
+        ,{
+          active:false
+        }).then(function () {
+        res.render('admin/shown_message', {
+            userInfo: req.userInfo,
+            message: '成功将用户 '+req.userInfo.username+' 禁言，该账号将不能再发布博客和留言！',
+            url: '/admin/user'
+        })
+    })
+})
+
+
+/**
+ *
+ *  解禁用户
+ */
+router.get('/user/active',function (req,res){
+    var id = req.query.id || "";
+
+    User.update({
+            _id: id
+        }
+        ,{
+            active:true
+        }).then(function () {
+        res.render('admin/shown_message', {
+            userInfo: req.userInfo,
+            message: '成功将用户 '+req.userInfo.username+' 解禁，该账号将恢复所有用户功能！',
+            url: '/admin/user'
+        })
+    })
+})
 
 /**
  * 1.return 数据操作
  * 2.return Promise.reject();
  */
+
+
+module.exports = router;

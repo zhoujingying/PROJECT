@@ -71,9 +71,9 @@ function renderComment() {
     } else {
         var html = '';
         for (var i=start; i<end; i++) {
-            html += '<div class="messageBox">'+
-                '<p class="name clear"><span class="fl">'+comments[i].username+'</span><span class="fr">'+ formatDate(comments[i].postTime) +'</span></p><p>'+comments[i].content+'</p>'+
-                '</div>';
+            html += '<div class="messageList" style="display: block;"><div class="messageBox" style="background-color: rgba(223, 240, 216, 0.3);">'+
+                '<p class="name clear"><span class="fl">'+comments[i].username+'</span><span class="fr" style="font-size: 14px">'+ formatDate(comments[i].postTime) +'</span></p><div style="overflow: auto;"><p class="fl">'+comments[i].content+'</p><p class="fr" style="margin: 4px 0"><a href="javascript;">举报</a></p>'+
+                '</div></div></div>';
         }
         $('.messageList').html(html);
     }

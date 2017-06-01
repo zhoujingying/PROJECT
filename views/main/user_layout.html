@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户主页</title>
+    <link rel="stylesheet" type="text/css" href="/public/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/public/css/bootstrap-theme.min.css">
+    <script src="/public/js/jquery-1.12.4.min.js"></script>
+    <script src="/public/js/bootstrap.min.js"></script>
+
+
+</head>
+<body>
+
+<!--顶部导航-->
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+
+            <a class="navbar-brand" href="/user">个人中心</a>
+        </div>
+
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">博客管理 <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/user/content/add">新增文章</a></li>
+                        <li><a href="/user/content">已发表文章</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="/user/comment">查看评论 <span class="caret"></span></a>
+                    <!--<ul class="dropdown-menu">-->
+                        <!--<li><a href="/user/content/add">新增文章</a></li>-->
+                        <!--<li><a href="/user/content">已发表文章</a></li>-->
+                    <!--</ul>-->
+                </li>
+
+            </ul>
+
+
+            <form class="navbar-form navbar-left">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+
+            <!--//管理员右侧信息-->
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{userInfo.username}} <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">注销</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!--巨幕-->
+<div class="container-fluid">
+
+    {% block main %}{{%endblock%}}
+
+</div>
+</body>
+</html>

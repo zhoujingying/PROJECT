@@ -8,13 +8,14 @@
 
 <h3>用户列表</h3>
 
-
-<table class="table table-hover">
+<table class="table table-hover" id="userActive">
     <tr>
         <th>用户id</th>
         <th>用户名</th>
         <th>用户密码</th>
         <th>是否为管理员</th>
+        <th>当前状态</th>
+        <th>操作</th>
     </tr>
     {% for user in users %}
     <tr>
@@ -22,8 +23,17 @@
         <td>{{user.username}}</td>
         <td>{{user.password}}</td>
         <td>
-            {% if user.isAdmin %}是{% endif %}
+            {% if user.isAdmin %}是{%else%}否{% endif %}
         </td>
+        <td>{% if user.active %}正常{%else%}禁言{% endif %}</td>
+        <td>
+            {% if !user.isAdmin %}
+            {% if user.active %}
+            <a href="/admin/user/unactive?id={{user._id.toString()}}" role="unactive">锁定账号</a>
+            {%else%}
+            <a href="/admin/user/active?id={{user._id.toString()}}" role="active">解锁账号</a>
+            {% endif %}
+            {% endif %}</td>
     </tr>
     
     {% endfor %}

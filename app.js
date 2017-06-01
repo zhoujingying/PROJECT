@@ -25,6 +25,7 @@ app.use(function(req,res,next){
             //获取当前登录用户类型,从数据库获取
             User.findById(req.userInfo._id).then(function(userInfo){
                 req.userInfo.isAdmin = Boolean(userInfo.isAdmin);
+                req.userInfo.active = Boolean(userInfo.active);
                 next();
             })
 
@@ -61,6 +62,7 @@ app.use('/',require('./routers/main'));
 
 
 //5.连接数据库并开启应用
+// mogooes.Promise = global.Promise;
 mogooes.connect('mongodb://localhost:27017/blog',function(err){
     if (err) {
         console.log('connext err');

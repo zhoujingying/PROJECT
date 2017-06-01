@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var userModel = require('../models/Users')
+var userModel = require('../models/Users');
+var Contents = require('../models/Contents');
+var Comments = require('../models/Comments');
 
 /**
  * 统一返回格式(包括错误码配置)
@@ -133,5 +135,53 @@ router.get('/user/logout',function(req,res){
     req.cookies.set('userInfo',null);        //将cookie设置为空
     res.json(responseData);
 })
+
+
+
+/*
+ * 获取指定文章的所有评论
+ * */
+router.get('/comment', function(req, res) {
+    var contentId = req.query.contentid || '';
+
+    Contents.findOne({
+        _id: contentId
+    }).then(function(content) {
+        responseData.data = content.comments;
+        res.json(responseData);
+    })
+});
+
+/*
+ * 评论提交
+ * */
+router.post('/comment/post', function(req, res) {
+    //内容的id
+    var contentId = req.body.contentid || '';
+    var postData = {
+        username: req.userInfo.username,
+        postTime: new Date(),
+        content: req.body.content
+    };
+
+    //查询当前这篇内容的信息
+    Contents.findOne({
+        _id: contentId
+    }).then(function(content) {
+        content.comments.push(postData);
+        return content.save();
+    }).then(function(newContent) {
+        responseData.message = '评论成功';
+        responseData.data = newContent;
+        res.json(responseData);
+    });
+
+    new Comments({
+        user: req.userInfo._id.toString(),
+        forContent:req.body.contentid,
+        comment:req.body.content
+    }).save();
+});
+
 
 module.exports = router;

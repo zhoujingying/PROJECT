@@ -1,0 +1,31 @@
+    <nav style="height: 112px">
+        <ul class="pager">
+            {% if page_count == 0%}
+            <li>当前分类下没有博客</li>
+            {%else%}
+
+
+
+            {% if page == 1 %}
+            <li class="previous"><a href="/{{api}}?page=1" class="disabled" role="button"><span aria-hidden="true" style="background-color: transparent;">&larr;没有上一页了</span> </a></li>
+            {%  else %}
+            <li class="previous"><a href="/?category={{category}}&page={{page-1}}"><span aria-hidden="true">&larr;上一页</span> </a></li>
+            {% endif %}
+            <li><span style="color: royalblue;border: 0;">{{page}}</span>/<span style="border: 0;">{{page_max}}</span></li>
+
+
+            {% if page == page_max %}
+            <li class="next"><a href="/?page={{page}}" class="disabled" role="button"> <span aria-hidden="true" style="background-color: transparent;">&rarr;没有下一页了</span></a></li>
+
+            <!--<script type="text/javascript">-->
+                <!--alert("已经是最后一页了");-->
+            <!--</script>-->
+
+            {%  else %}
+            <li class="next"><a href="/?category={{category}}&page={{page+1}}"> <span aria-hidden="true">&rarr;下一页</span></a></li>
+            {% endif %}
+            {% endif %}
+
+        </ul>
+    </nav>
+
